@@ -4,7 +4,7 @@
 #include <utility>
 #include <type_traits>
 
-template <typename PtrType, typename FlagsType, bool UniquePtr>
+template <typename PtrType, typename FlagsType, bool UniquePtr=true>
 class flag_ptr {
 public:
     explicit flag_ptr(PtrType* ptr) : m_ptr(ptr) {}
@@ -21,9 +21,9 @@ public:
         f.m_ptr = nullptr;
     }
 
-    flag_ptr<PtrType, FlagsType, UniquePtr>& operator=( const flag_ptr<PtrType, FlagsType, UniquePtr>& f) = delete;
+    auto& operator=( const flag_ptr<PtrType, FlagsType, UniquePtr>& f) = delete;
 
-    flag_ptr<PtrType, FlagsType, UniquePtr>& operator=( flag_ptr<PtrType, FlagsType, UniquePtr>&& f) noexcept {
+    auto& operator=( flag_ptr<PtrType, FlagsType, UniquePtr>&& f) noexcept {
         m_ptr = f.m_ptr;
         f.m_ptr = nullptr;
         return *this;
@@ -47,20 +47,37 @@ public:
         return *(FlagsType*)(&fl);
     }
 
-    const PtrType* operator->() const { return (PtrType*)get_raw_ptr(); }
-    PtrType* operator->()  { return (PtrType*)get_raw_ptr(); }
+    const PtrType* operator->() const {
+        return (PtrType*)get_raw_ptr();
+    }
 
-    const PtrType& operator*() const { return *(PtrType*)get_raw_ptr(); }
-    PtrType& operator*() { return *(PtrType*)get_raw_ptr(); }
+    PtrType* operator->()  {
+        return (PtrType*)get_raw_ptr();
+    }
 
-    PtrType* get() { return (PtrType*)get_raw_ptr(); }
-    const PtrType* get() const { return (PtrType*)get_raw_ptr(); }
+    const PtrType& operator*() const {
+        return *(PtrType*)get_raw_ptr();
+    }
+
+    PtrType& operator*() {
+        return *(PtrType*)get_raw_ptr();
+    }
+
+    PtrType* get() {
+        return (PtrType*)get_raw_ptr();
+    }
+
+    const PtrType* get() const {
+        return (PtrType*)get_raw_ptr();
+    }
 
     operator bool() const {
         return get_raw_ptr() ? true : false;
     }
 
-    void reset_only_ptr() { reset_only_ptr(nullptr); }
+    void reset_only_ptr() {
+        reset_only_ptr(nullptr);
+    }
 
     void reset_only_ptr(PtrType* ptr) {
         delete_ptr();
@@ -69,7 +86,9 @@ public:
         set_flags(prev_flags);
     }
 
-    void reset() { reset(nullptr); }
+    void reset() {
+        reset(nullptr);
+    }
 
     void reset(PtrType* ptr) {
         delete_ptr();
@@ -99,17 +118,12 @@ private:
     }
 
     void delete_ptr() {
-        if constexpr(!UniquePtr)
-            return;
-
-        auto ptr = get_raw_ptr();
-
-        if (ptr)
-            delete ptr;
+        if constexpr(UniquePtr)
+            delete get_raw_ptr();
     }
 };
 
-template <typename T, typename FlagsType, bool UniquePtr, typename...Args>
+template <typename T, typename FlagsType, bool UniquePtr=true, typename...Args>
 auto make_flag_ptr(Args&&...args) {
    return flag_ptr<T, FlagsType, UniquePtr>(args...);
 }
