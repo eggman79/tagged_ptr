@@ -3,7 +3,6 @@
 #include <cassert>
 #include <utility>
 #include <type_traits>
-#include <iostream>
 
 template <typename PtrType, typename FlagsType, bool UniquePtr>
 class flag_ptr {
@@ -43,7 +42,6 @@ public:
 
     FlagsType get_flags() const {
         const std::uintptr_t fl = (std::uintptr_t)m_flags;
-        std::cout << fl << std::endl;
         assert(fl < alignment_of_in_bits<PtrType*>());
         return *(FlagsType*)(&fl);
     }
