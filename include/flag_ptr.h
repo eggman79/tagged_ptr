@@ -8,6 +8,10 @@ template <typename PtrType, typename FlagsType, bool UniquePtr>
 class flag_ptr {
 public:
     explicit flag_ptr(PtrType* ptr) : m_ptr(ptr) {}
+
+    template <typename...Args>
+    explicit flag_ptr(Args&&...args) : m_ptr(new PtrType(std::forward<Args>(args)...)) {}
+
     flag_ptr() : m_ptr(nullptr) {}
 
     flag_ptr(const flag_ptr<PtrType, FlagsType, UniquePtr>& f) = delete;
@@ -29,20 +33,17 @@ public:
 
     void set_flags(FlagsType flags) {
         const std::uintptr_t fl = *(std::uintptr_t*)&flags;
-        assert(fl < alignment_of_in_bits<PtrType*>());
         m_flags = fl;
     }
 
     template <FlagsType flags>
     void set_flags() {
         const std::uintptr_t fl = *(std::uintptr_t*)&flags;
-        assert(fl < alignment_of_in_bits<PtrType*>());
         m_flags = fl;
     }
 
     FlagsType get_flags() const {
         const std::uintptr_t fl = (std::uintptr_t)m_flags;
-        assert(fl < alignment_of_in_bits<PtrType*>());
         return *(FlagsType*)(&fl);
     }
 
@@ -109,6 +110,6 @@ private:
 };
 
 template <typename T, typename FlagsType, bool UniquePtr, typename...Args>
-flag_ptr<T, FlagsType, UniquePtr> make_flag_ptr(Args&&...args) {
-   return flag_ptr<T, FlagsType, UniquePtr>(new T(std::forward<Args>(args)...));
+auto make_flag_ptr(Args&&...args) {
+   return flag_ptr<T, FlagsType, UniquePtr>(args...);
 }
