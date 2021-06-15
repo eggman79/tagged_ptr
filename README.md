@@ -1,2 +1,2 @@
 # flag_ptr
-very simple single header c++ library for read/write flags on the youngest not used bits of pointer
+single header c++ library for simple reading or writing flags on youngest unused bits of pointer
