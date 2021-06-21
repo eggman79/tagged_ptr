@@ -3,6 +3,33 @@
 #include <gtest/gtest.h>
 #include "flag_ptr.h"
 
+using namespace eggman79;
+
+TEST(flag_ptr, set_flag) {
+    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>>("string");
+    obj.set_flag<0>(true);
+    EXPECT_TRUE(obj.get_flag<0>());
+}
+
+TEST(flag_ptr, get_flag) {
+    flag_ptr<std::string, flags<flag<bool, 1>>> obj;
+    obj.set_flag<0>(true);
+    EXPECT_TRUE(obj.get_flag<0>());
+}
+
+TEST(flag_ptr, check_ptr_value) {
+    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>>("string");
+    EXPECT_EQ(*obj, "string");
+}
+
+TEST(flag_ptr, bool_operator_return) {
+    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>, flag<bool, 1>>>();
+    EXPECT_TRUE(obj);
+
+    flag_ptr<std::string, flags<flag<bool, 1>>> false_obj;
+    EXPECT_FALSE(false_obj);
+}
+
 TEST(flag_ptr, flag_size) {
     using Flags = flags<flag<bool, 1>>;
     flag_ptr<std::string, flags<flag<bool, 1>>> obj;
@@ -33,14 +60,14 @@ TEST(flag_ptr, flags_size) {
 
 TEST(flag_ptr, flags_size_2) {
     using StringFlags = flags<flag<uint8_t, 1>, flag<bool, 1>, flag<uint32_t, 1>>;
-    flag_ptr<std::string, StringFlags> obj("str");
+    auto obj = make_flag_ptr<std::string, StringFlags>("str");
     EXPECT_EQ(obj.get_flags_size(), obj.get_flag_size<0>() + obj.get_flag_size<1>() + obj.get_flag_size<2>());
     EXPECT_EQ(obj.get_flag_offset<2>() + obj.get_flag_size<2>(), obj.get_flag_size<0>() + obj.get_flag_size<1>() + obj.get_flag_size<2>());
 }
 
 TEST(flag_ptr, simple_case) {
     using StringFlags = flags<flag<uint8_t, 1>, flag<bool, 1>, flag<uint32_t, 1>>;
-    flag_ptr<std::string, StringFlags> obj("string");
+    auto obj = make_flag_ptr<std::string, StringFlags>("string");
     EXPECT_TRUE(obj);
     obj.reset();
     EXPECT_FALSE(obj);
@@ -60,7 +87,7 @@ TEST(flag_ptr, simple_case) {
 TEST(flag_ptr, struct_case) {
     struct StructFlags { bool own: 1; bool deleted: 1; };
     using Flags = flags<flag<bool, 1>, flag<StructFlags, 2>>;
-    flag_ptr<std::string, Flags> obj("test");
+    auto obj = make_flag_ptr<std::string, Flags>("test");
     obj.set_flag<1>(StructFlags{true, true});
 }
 

@@ -1,12 +1,13 @@
 #include <cstdlib>
 #include <cstdint>
 #include <bit>
-#include <iostream>
 #include <cassert>
 #include <utility>
 #include <numeric>
 #include <tuple>
 #include <type_traits>
+
+namespace eggman79 {
 
 template <typename Type, size_t Size>
 struct flag {
@@ -18,28 +19,6 @@ template <typename...Flags>
 struct flags {
     using type = std::tuple<Flags...>;
 };
-
-template <std::size_t Index, size_t ToIndex, typename Tuple>
-constexpr size_t eval_flag_offset() {
-    using Flag = typename std::tuple_element<Index, Tuple>::type;
-    if constexpr (Index == ToIndex)
-        return 0;
-    else {
-        return eval_flag_offset<Index + 1, ToIndex, Tuple>() + Flag::size;
-    }
-}
-
-template <typename Tuple>
-constexpr size_t get_flags_size() {
-    constexpr auto Count = std::tuple_size<Tuple>::value;
-
-    if constexpr (!Count)
-        return 0;
-    else {
-        using Flag = typename std::tuple_element<Count - 1, Tuple>::type;
-        return eval_flag_offset<0, Count - 1, Tuple>() + Flag::size;
-    }
-}
 
 template <typename PtrType, typename Flags, bool AutoDestruct=true>
 class flag_ptr {
@@ -56,12 +35,21 @@ private:
     }
 
     static constexpr std::size_t BitfieldSize = alignment_of_in_bits<PtrType*>();
-    static constexpr std::uintptr_t FlagMask = ((0x1 << alignment_of_in_bits<PtrType*>()) - 1);
-    static constexpr std::uintptr_t PtrMask = ~FlagMask;
+    static constexpr std::uintptr_t PtrMask = ~((0x1 << alignment_of_in_bits<PtrType*>()) - 1);
+
+    template <std::size_t Index, size_t ToIndex, typename Tuple>
+    static constexpr size_t eval_flag_offset() noexcept {
+        using Flag = typename std::tuple_element<Index, Tuple>::type;
+        if constexpr (Index == ToIndex)
+            return 0;
+        else {
+            return eval_flag_offset<Index + 1, ToIndex, Tuple>() + Flag::size;
+        }
+    }
 
 public:
     template <typename...Args>
-    explicit flag_ptr(Args&&...args) : m_ptr(new PtrType(std::forward<Args>(args)...)) {}
+    //explicit flag_ptr(Args&&...args) : m_ptr(new PtrType(std::forward<Args>(args)...)) {}
 
     explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
 
@@ -190,5 +178,7 @@ private:
 
 template <typename T, typename FlagsType, bool AutoDestruct=true, typename...Args>
 auto make_flag_ptr(Args&&...args) {
-   return flag_ptr<T, FlagsType, AutoDestruct>(std::forward<Args>(args)...);
+   return flag_ptr<T, FlagsType, AutoDestruct>(new T(std::forward<Args>(args)...));
+}
+
 }
