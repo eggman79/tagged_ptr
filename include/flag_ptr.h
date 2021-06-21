@@ -48,9 +48,6 @@ private:
     }
 
 public:
-    template <typename...Args>
-    //explicit flag_ptr(Args&&...args) : m_ptr(new PtrType(std::forward<Args>(args)...)) {}
-
     explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
 
     flag_ptr() noexcept : m_ptr(nullptr) {}
