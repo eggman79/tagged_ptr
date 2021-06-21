@@ -63,9 +63,9 @@ public:
     template <typename...Args>
     explicit flag_ptr(Args&&...args) : m_ptr(new PtrType(std::forward<Args>(args)...)) {}
 
-    explicit flag_ptr(PtrType* ptr) : m_ptr(ptr) {}
+    explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
 
-    flag_ptr() : m_ptr(nullptr) {}
+    flag_ptr() noexcept : m_ptr(nullptr) {}
 
     flag_ptr(const FlagPtrType& f) = delete;
 
@@ -82,7 +82,7 @@ public:
         return *this;
     }
 
-    ~flag_ptr() { delete_ptr(); }
+    ~flag_ptr() noexcept { delete_ptr(); }
 
     template <size_t Index>
     static constexpr size_t get_flag_offset() noexcept {
@@ -188,7 +188,7 @@ private:
     }
 };
 
-/*template <typename T, typename FlagsType, bool AutoDestruct=true, typename...Args>
+template <typename T, typename FlagsType, bool AutoDestruct=true, typename...Args>
 auto make_flag_ptr(Args&&...args) {
-   return flag_ptr<T, FlagsType, AutoDestruct>(args...);
-}*/
+   return flag_ptr<T, FlagsType, AutoDestruct>(std::forward<Args>(args)...);
+}

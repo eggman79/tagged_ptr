@@ -80,6 +80,40 @@ TEST(flag_ptr, enum_case) {
     EXPECT_EQ(*obj, "test");
 }
 
+TEST(flag_ptr, make_flag_ptr) {
+    struct StringFlags {
+        bool own : 1;
+        bool deleted : 1;
+    };
+    auto obj = make_flag_ptr<std::string, flags<flag<StringFlags, 2>, flag<bool, 1>>>("string");
+
+    EXPECT_TRUE(obj);
+    EXPECT_EQ(*obj, "string");
+    EXPECT_EQ(obj.get_flag_size<0>(), 2);
+    EXPECT_EQ(obj.get_flag_size<1>(), 1);
+
+    EXPECT_FALSE(obj.get_flag<0>().own);
+    EXPECT_FALSE(obj.get_flag<0>().deleted);
+    EXPECT_FALSE(obj.get_flag<1>());
+
+    obj.set_flag<0>(StringFlags{true, true});
+    obj.set_flag<1>(true);
+    EXPECT_TRUE(obj.get_flag<0>().own);
+    EXPECT_TRUE(obj.get_flag<0>().deleted);
+    EXPECT_TRUE(obj.get_flag<1>());
+
+    obj.reset_only_ptr();
+    EXPECT_FALSE(obj);
+    EXPECT_TRUE(obj.get_flag<0>().own);
+    EXPECT_TRUE(obj.get_flag<0>().deleted);
+    EXPECT_TRUE(obj.get_flag<1>());
+
+    obj.reset();
+    EXPECT_FALSE(obj.get_flag<0>().own);
+    EXPECT_FALSE(obj.get_flag<0>().deleted);
+    EXPECT_FALSE(obj.get_flag<1>());
+}
+
 int main(int argc, char* argv[]) {
     ::testing::InitGoogleTest();
     return RUN_ALL_TESTS();
