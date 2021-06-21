@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
-#include "flag_ptr.h"
+#include "flag_ptr/flag_ptr.h"
 
 using namespace eggman79;
 
@@ -29,6 +29,25 @@ TEST(flag_ptr, bool_operator_return) {
 
     flag_ptr<std::string, flags<flag<bool, 1>>> false_obj;
     EXPECT_FALSE(false_obj);
+}
+
+TEST(flag_ptr, reset_only_ptr) {
+    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>, flag<bool, 1>>>("str1");
+    EXPECT_EQ(*obj, "str1");
+    EXPECT_TRUE(obj);
+    obj.set_flag<0>(true);
+    EXPECT_TRUE(obj.get_flag<0>());
+
+    obj.reset_only_ptr();
+    EXPECT_TRUE(obj.get_flag<0>());
+    EXPECT_FALSE(obj);
+
+    obj.reset_only_ptr(new std::string("str2"));
+    EXPECT_TRUE(obj.get_flag<0>());
+    EXPECT_EQ(*obj, "str2");
+}
+
+TEST(flag_ptr, reset) {
 }
 
 TEST(flag_ptr, flag_size) {
