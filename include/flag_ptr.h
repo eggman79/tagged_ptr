@@ -1,3 +1,6 @@
+#ifndef FLAG_PTR_H
+#define FLAG_PTR_H
+
 #include <cstdlib>
 #include <cstdint>
 #include <bit>
@@ -48,7 +51,7 @@ private:
     }
 
     template  <size_t SizeInBits>
-    struct bitsize_to_integral_type {
+    struct bitsize_to_int_type {
         static_assert(SizeInBits <= sizeof(uintptr_t) * 8, "size is too big");
         static constexpr auto bytes = SizeInBits / 8 + (SizeInBits % 8 ? 1 : 0);
         static_assert(bytes <= 8, "add conditional with uin128_t");
@@ -109,7 +112,7 @@ public:
             Index,
             typename Flags::type>::type;
 
-        using int_type = typename bitsize_to_integral_type<FlagPtrType::get_flags_size()>::type;
+        using int_type = typename bitsize_to_int_type<FlagPtrType::get_flags_size()>::type;
 
         const auto val = *(int_type*)&value;
         constexpr auto size = Flag::size;
@@ -194,3 +197,5 @@ auto make_flag_ptr(Args&&...args) {
 }
 
 }
+
+#endif

@@ -18,7 +18,7 @@ TEST(flag_ptr, get_flag) {
 }
 
 TEST(flag_ptr, check_ptr_value) {
-    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>>("string");
+    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>, false>("string");
     obj.set_flag<0>(true);
     EXPECT_EQ(*obj, "string");
 }
@@ -91,6 +91,10 @@ TEST(flag_ptr, struct_case) {
     using Flags = flags<flag<bool, 1>, flag<StructFlags, 2>>;
     auto obj = make_flag_ptr<std::string, Flags>("test");
     obj.set_flag<1>(StructFlags{true, true});
+    EXPECT_TRUE(obj);
+    EXPECT_TRUE(obj.get_flag<1>().own);
+    EXPECT_TRUE(obj.get_flag<1>().deleted);
+    EXPECT_EQ(*obj, "test");
 }
 
 TEST(flag_ptr, enum_case) {
@@ -114,7 +118,10 @@ TEST(flag_ptr, make_flag_ptr) {
         bool own : 1;
         bool deleted : 1;
     };
-    auto obj = make_flag_ptr<std::string, flags<flag<StringFlags, 2>, flag<bool, 1>>>("string");
+    auto obj = make_flag_ptr<
+        std::string,
+        flags<flag<StringFlags, 2>,
+        flag<bool, 1>>>("string");
 
     EXPECT_TRUE(obj);
     EXPECT_EQ(*obj, "string");
