@@ -142,38 +142,38 @@ public:
         return *(PtrType*)get_raw_ptr();
     }
 
-    void delete_ptr() {
+    void delete_ptr() noexcept {
         if constexpr(AutoDestruct)
             delete get_raw_ptr();
     }
-    PtrType* get() {
+    PtrType* get() noexcept {
         return (PtrType*)get_raw_ptr();
     }
 
-    const PtrType* get() const {
+    const PtrType* get() const noexcept {
         return (PtrType*)get_raw_ptr();
     }
 
-    operator bool() const {
+    operator bool() const noexcept {
         return get_raw_ptr() ? true : false;
     }
 
-    void reset_only_ptr() {
+    void reset_only_ptr() noexcept {
         reset_only_ptr(nullptr);
     }
 
-    void reset_only_ptr(PtrType* ptr) {
+    void reset_only_ptr(PtrType* ptr) noexcept {
         constexpr auto flags_size = get_flags_size();
         const auto flags = (uintptr_t)m_ptr & ((0x1 << flags_size) - 1);
         delete_ptr();
         m_ptr = (PtrType*)((uintptr_t)ptr | flags);
     }
 
-    void reset() {
+    void reset() noexcept {
         reset(nullptr);
     }
 
-    void reset(PtrType* ptr) {
+    void reset(PtrType* ptr) noexcept {
         delete_ptr();
         m_ptr = ptr;
     }
@@ -183,7 +183,7 @@ private:
         std::uintptr_t m_flags : BitfieldSize;
     };
 
-    PtrType* get_raw_ptr() const {
+    PtrType* get_raw_ptr() const noexcept {
         return (PtrType*)(((std::uintptr_t)m_ptr) & PtrMask);
     }
 };
