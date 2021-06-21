@@ -20,12 +20,12 @@ struct flags {
 };
 
 template <std::size_t Index, size_t ToIndex, typename Tuple>
-constexpr size_t sum_flag_offset() {
+constexpr size_t eval_flag_offset() {
     using Flag = typename std::tuple_element<Index, Tuple>::type;
     if constexpr (Index == ToIndex)
         return 0;
     else {
-        return sum_flag_offset<Index + 1, ToIndex, Tuple>() + Flag::size;
+        return eval_flag_offset<Index + 1, ToIndex, Tuple>() + Flag::size;
     }
 }
 
@@ -37,7 +37,7 @@ constexpr size_t get_flags_size() {
         return 0;
     else {
         using Flag = typename std::tuple_element<Count - 1, Tuple>::type;
-        return sum_flag_offset<0, Count - 1, Tuple>() + Flag::size;
+        return eval_flag_offset<0, Count - 1, Tuple>() + Flag::size;
     }
 }
 
@@ -85,20 +85,22 @@ public:
     ~flag_ptr() { delete_ptr(); }
 
     template <size_t Index>
-    static constexpr size_t get_flag_offset() {
-        return sum_flag_offset<0, Index, typename Flags::type>();
+    static constexpr size_t get_flag_offset() noexcept {
+        return eval_flag_offset<0, Index, typename Flags::type>();
     }
 
     template <size_t Index>
-    static constexpr size_t get_flag_size() {
+    static constexpr size_t get_flag_size() noexcept {
         using Flag = typename std::tuple_element<Index, typename Flags::type>::type;
         return Flag::size;
     }
 
-    static constexpr size_t get_flags_size() {
+    static constexpr size_t get_flags_size() noexcept {
         constexpr auto count = std::tuple_size<typename Flags::type>::value;
         return get_flag_offset<count - 1>() + get_flag_size<count - 1>();
     }
+
+    static_assert(FlagPtrType::get_flags_size() <= FlagPtrType::BitfieldSize, "flags size is too big");
 
     template <size_t Index, typename Type>
     void set_flag(Type value) noexcept {
