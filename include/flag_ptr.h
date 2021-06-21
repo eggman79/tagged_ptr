@@ -25,12 +25,12 @@ class flag_ptr {
 private:
     using FlagPtrType = flag_ptr<PtrType, Flags, AutoDestruct>;
 
-    static constexpr std::size_t log2(size_t n) {
+    static constexpr std::size_t log2(size_t n) noexcept {
         return ((n < 2) ? 0 : 1 + log2(n / 2));
     }
 
     template <typename Type>
-    static constexpr size_t alignment_of_in_bits() {
+    static constexpr size_t alignment_of_in_bits() noexcept {
         return log2(std::alignment_of<Type>::value);
     }
 
@@ -47,12 +47,28 @@ private:
         }
     }
 
+    template  <size_t SizeInBits>
+    struct bitsize_to_integral_type {
+        static_assert(SizeInBits <= sizeof(uintptr_t) * 8, "size is too big");
+        static constexpr auto bytes = SizeInBits / 8 + (SizeInBits % 8 ? 1 : 0);
+        static_assert(bytes <= 8, "add conditional with uin128_t");
+
+        using type = typename std::conditional<
+            bytes == 1,
+            uint8_t,
+            std::conditional<
+                bytes == 2,
+                uint16_t,
+                std::conditional<
+                    bytes == 4,
+                    uint32_t,
+                    uint64_t>>>::type;
+    };
+
 public:
     explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
-
+    explicit flag_ptr(const FlagPtrType& f) = delete;
     flag_ptr() noexcept : m_ptr(nullptr) {}
-
-    flag_ptr(const FlagPtrType& f) = delete;
 
     flag_ptr(FlagPtrType&& f) noexcept {
         m_ptr = f.m_ptr;
@@ -93,7 +109,9 @@ public:
             Index,
             typename Flags::type>::type;
 
-        const auto val = *(uint8_t*)&value;
+        using int_type = typename bitsize_to_integral_type<FlagPtrType::get_flags_size()>::type;
+
+        const auto val = *(int_type*)&value;
         constexpr auto size = Flag::size;
         constexpr auto offset = get_flag_offset<Index>();
         constexpr auto value_mask = ((1 << size) - 1) << offset;
@@ -163,10 +181,7 @@ public:
         m_ptr = ptr;
     }
 private:
-      union {
-        PtrType* m_ptr;
-        std::uintptr_t m_flags : BitfieldSize;
-    };
+    PtrType* m_ptr;
 
     PtrType* get_raw_ptr() const noexcept {
         return (PtrType*)(((std::uintptr_t)m_ptr) & PtrMask);

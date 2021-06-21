@@ -19,6 +19,7 @@ TEST(flag_ptr, get_flag) {
 
 TEST(flag_ptr, check_ptr_value) {
     auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>>("string");
+    obj.set_flag<0>(true);
     EXPECT_EQ(*obj, "string");
 }
 
@@ -36,14 +37,15 @@ TEST(flag_ptr, flag_size) {
     EXPECT_EQ(obj.get_flag_size<0>(), 1);
 }
 
-TEST(flag_ptr, flags_size_and_offset) {
+TEST(flag_ptr, flags_size_and_offset_2_fields) {
     flag_ptr<std::string, flags<flag<uint8_t, 2>, flag<bool, 1>>> obj;
     EXPECT_EQ(obj.get_flag_size<0>(), 2);
     EXPECT_EQ(obj.get_flag_size<1>(), 1);
+    EXPECT_EQ(obj.get_flag_offset<0>(), 0);
     EXPECT_EQ(obj.get_flag_offset<1>(), 2);
 }
 
-TEST(flag_ptr, flags_size_and_offset_2) {
+TEST(flag_ptr, flags_size_and_offset_3_fields) {
     flag_ptr<std::string, flags<flag<bool, 1>, flag<bool, 1>, flag<bool, 1>>> obj;
     EXPECT_EQ(obj.get_flag_size<0>(), 1);
     EXPECT_EQ(obj.get_flag_size<1>(), 1);
