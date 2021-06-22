@@ -8,6 +8,10 @@ target_include_directories(flag_ptr_tests PUBLIC gtest)
 
 add_test(flag_ptr_tests flag_ptr_tests)
 
+find_program(MEMORYCHECK_COMMAND valgrind)
 get_property(flag_ptr_tests_bin TARGET flag_ptr_tests PROPERTY LOCATION)
-add_test(NAME flag_ptr_tests_valgrind COMMAND valgrind --leak-check=full -s --log-fd=1 -q ${flag_ptr_tests_bin} --gtest_brief=1)
-set_tests_properties(flag_ptr_tests_valgrind PROPERTIES PASS_REGULAR_EXPRESSION ".+ERROR SUMMARY: 0 errors.+")
+set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full -s --log-fd=1 -q")
+
+
+#add_test(NAME flag_ptr_tests_valgrind COMMAND valgrind --leak-check=full -s --log-fd=1 -q ${flag_ptr_tests_bin} --gtest_brief=1)
+#set_tests_properties(flag_ptr_tests_valgrind PROPERTIES PASS_REGULAR_EXPRESSION ".+ERROR SUMMARY: 0 errors.+")
