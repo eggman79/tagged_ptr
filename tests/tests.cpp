@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
-#include "flag_ptr/flag_ptr.h"
+#include "flag_ptr/flag_ptr.hpp"
 
 using namespace eggman79;
 
@@ -26,6 +26,8 @@ TEST(flag_ptr, check_ptr_value) {
 TEST(flag_ptr, bool_operator_return) {
     auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>, flag<bool, 1>>>();
     EXPECT_TRUE(obj);
+    obj.reset();
+    EXPECT_FALSE(obj);
 
     flag_ptr<std::string, flags<flag<bool, 1>>> false_obj;
     EXPECT_FALSE(false_obj);
