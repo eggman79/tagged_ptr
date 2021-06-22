@@ -1,5 +1,5 @@
-#ifndef FLAG_PTR_H
-#define FLAG_PTR_H
+#ifndef FLAG_PTR_HPP
+#define FLAG_PTR_HPP
 
 #include <cstdlib>
 #include <cstdint>

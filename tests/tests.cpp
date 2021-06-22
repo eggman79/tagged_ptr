@@ -18,7 +18,7 @@ TEST(flag_ptr, get_flag) {
 }
 
 TEST(flag_ptr, check_ptr_value) {
-    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>, false>("string");
+    auto obj = make_flag_ptr<std::string, flags<flag<bool, 1>>>("string");
     obj.set_flag<0>(true);
     EXPECT_EQ(*obj, "string");
 }
@@ -172,6 +172,6 @@ TEST(flag_ptr, make_flag_ptr) {
 }
 
 int main(int argc, char* argv[]) {
-    ::testing::InitGoogleTest();
+    ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

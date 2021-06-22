@@ -1,9 +1,13 @@
 project(flag_ptr_tests)
 add_executable(flag_ptr_tests tests.cpp)
 target_compile_features(flag_ptr_tests PUBLIC cxx_std_20)
+
 target_link_libraries(flag_ptr_tests PUBLIC gtest)
 target_include_directories(flag_ptr_tests PUBLIC ../include)
 target_include_directories(flag_ptr_tests PUBLIC gtest)
+
 add_test(flag_ptr_tests flag_ptr_tests)
+
 get_property(flag_ptr_tests_bin TARGET flag_ptr_tests PROPERTY LOCATION)
-add_test(NAME flag_ptr_tests_valgrind COMMAND valgrind ${flag_ptr_tests_bin} --leak-check=full -s --error-exitcode=4)
+add_test(NAME flag_ptr_tests_valgrind COMMAND valgrind --leak-check=full -s --log-fd=1 -q ${flag_ptr_tests_bin} --gtest_brief=1)
+set_tests_properties(flag_ptr_tests_valgrind PROPERTIES PASS_REGULAR_EXPRESSION ".+ERROR SUMMARY: 0 errors.+")
