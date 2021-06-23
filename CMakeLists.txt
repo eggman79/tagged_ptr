@@ -1,4 +1,4 @@
-project(flag_ptr)
+project(flag_ptr VERSION 0.0.1 LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.18)
 add_subdirectory(3rdparty/googletest)
 enable_testing()
