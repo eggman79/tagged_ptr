@@ -5,22 +5,16 @@ install:
 
 before_script:
     - cd ${TRAVIS_BUILD_DIR}
-
-      # Compiler selection
+    - git submodule update --init
+    - mkdir build && cd build
+    - cmake ..
 compiler:
     - clang
     - gcc
-
-
-      # Build steps
 script:
-    - git submodule update --init
     - cd ${TRAVIS_BUILD_DIR}
-    - mkdir build && cd build
-    - cmake ..
     - make
     - make test
     - cd ..
-
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
