@@ -64,6 +64,25 @@ private:
                     uint64_t>>>::type;
     };
 
+    template <size_t Index>
+    static constexpr size_t get_flag_offset() noexcept {
+        return eval_flag_offset<0, Index, typename Flags::type>();
+    }
+
+    template <size_t Index>
+    static constexpr size_t get_flag_size() noexcept {
+        using flag_type = typename std::tuple_element<
+            Index,
+            typename Flags::type>::type;
+        return flag_type::size;
+    }
+
+    static constexpr size_t get_flags_size() noexcept {
+        constexpr auto Count = std::tuple_size<typename Flags::type>::value;
+        return get_flag_offset<Count - 1>() + get_flag_size<Count - 1>();
+    }
+
+
 public:
     explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
     explicit flag_ptr(const FlagPtrType& f) = delete;
@@ -83,24 +102,6 @@ public:
     }
 
     ~flag_ptr() noexcept { delete_ptr(); }
-
-    template <size_t Index>
-    static constexpr size_t get_flag_offset() noexcept {
-        return eval_flag_offset<0, Index, typename Flags::type>();
-    }
-
-    template <size_t Index>
-    static constexpr size_t get_flag_size() noexcept {
-        using flag_type = typename std::tuple_element<
-            Index,
-            typename Flags::type>::type;
-        return flag_type::size;
-    }
-
-    static constexpr size_t get_flags_size() noexcept {
-        constexpr auto Count = std::tuple_size<typename Flags::type>::value;
-        return get_flag_offset<Count - 1>() + get_flag_size<Count - 1>();
-    }
 
     static_assert(
             FlagPtrType::get_flags_size() <= FlagPtrType::BitfieldSize,
