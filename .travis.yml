@@ -2,10 +2,6 @@ language: cpp
 
 install:
     - cd ${TRAVIS_BUILD_DIR}
-
-before_script:
-    - cd ${TRAVIS_BUILD_DIR}
-      # first we create a directory for the CMake binaries
     - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
     - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
       # we use wget to fetch the cmake binaries
@@ -22,9 +18,9 @@ before_script:
     - PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
       # don't forget to switch back to the main build directory once you are done
     - cd ${TRAVIS_BUILD_DIR}
-    - git submodule update --init
-    - mkdir build && cd build
-    - cmake ..
+before_script:
+    - cd ${TRAVIS_BUILD_DIR}
+    - mkdir build && cd build && cmake ..
 compiler:
     - clang
     - gcc
