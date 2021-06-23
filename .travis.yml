@@ -2,6 +2,7 @@ language: cpp
 
 install:
     - cd ${TRAVIS_BUILD_DIR}
+    - echo "install..."
     - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
     - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
       # we use wget to fetch the cmake binaries
@@ -20,14 +21,17 @@ install:
     - cd ${TRAVIS_BUILD_DIR}
 before_script:
     - cd ${TRAVIS_BUILD_DIR}
-    - mkdir build && cd build && cmake ..
+    - echo "before script..."
+    - mkdir build
+    - cd build
+    - cmake ..
 compiler:
     - clang
     - gcc
 script:
     - cd ${TRAVIS_BUILD_DIR}
+    - echo "script..."
     - make
     - make test
-    - cd ..
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
