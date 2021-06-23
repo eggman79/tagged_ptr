@@ -1,10 +1,6 @@
 <a href="https://www.codacy.com/manual/eggman79/flag_ptr?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eggman79/flag_ptr&amp;utm_campaign=Badge_Grade">
     <img src="https://app.codacy.com/project/badge/Grade/e6e76a680e61445a90616d27cb69b927" alt="codacy"/>
 </a>
-<a href="https://scan.coverity.com/projects/eggman79-flag_ptr">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/23297/badge.svg"/>
-</a>
   
 # flag_ptr
 single header-only c++ library for simple reading or writing flags on the youngest unused bits of pointer.
