@@ -18,10 +18,10 @@ struct flags {
     using type = std::tuple<Flags...>;
 };
 
-template <typename PtrType, typename Flags, bool auto_destruct = true>
+template <typename PtrType, typename Flags>
 class flag_ptr {
 private:
-    using flag_ptr_type = flag_ptr<PtrType, Flags, auto_destruct>;
+    using flag_ptr_type = flag_ptr<PtrType, Flags>;
 
     static constexpr std::size_t log2(std::size_t n) noexcept {
         return ((n < 2) ? 0 : 1 + log2(n / 2));
@@ -155,8 +155,7 @@ public:
     }
 
     void delete_ptr() noexcept {
-        if constexpr(auto_destruct)
-            delete get_raw_ptr();
+        delete get_raw_ptr();
     }
     PtrType* get() noexcept {
         return reinterpret_cast<PtrType*>(get_raw_ptr());
@@ -210,10 +209,9 @@ private:
 template <
     typename PtrType,
     typename FlagsType,
-    bool auto_destruct = true,
     typename...Args>
 static inline auto make_flag_ptr(Args&&...args) {
-    return flag_ptr<PtrType, FlagsType, auto_destruct>(
+    return flag_ptr<PtrType, FlagsType>(
            new PtrType(std::forward<Args>(args)...));
 }
 

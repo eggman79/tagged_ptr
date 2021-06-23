@@ -87,6 +87,12 @@ TEST(flag_ptr, enum_case) {
     EXPECT_EQ(*obj, "test");
 }
 
+TEST(flag_ptr, set_ptr_value) {
+    auto str = make_flag_ptr<std::string, flags<flag<bool, 1>>>("string");
+    *str = "test";
+    EXPECT_EQ(*str, "test");
+}
+
 int main(int argc, char* argv[]) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
