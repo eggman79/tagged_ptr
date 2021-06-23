@@ -16,9 +16,11 @@ compiler:
 script:
     - git submodule update --init
     - cd ${TRAVIS_BUILD_DIR}
+    - mkdir build && cd build
     - cmake ..
     - make
     - make test
+    - cd ..
 
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
