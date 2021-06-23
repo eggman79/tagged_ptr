@@ -7,10 +7,10 @@
 
 namespace eggman79 {
 
-template <typename Type, std::size_t Size>
+template <typename Type, std::size_t flag_size>
 struct flag {
     using type = Type;
-    static constexpr auto size = Size;
+    static constexpr auto size = flag_size;
 };
 
 template <typename...Flags>
@@ -18,10 +18,10 @@ struct flags {
     using type = std::tuple<Flags...>;
 };
 
-template <typename PtrType, typename Flags, bool AutoDestruct = true>
+template <typename PtrType, typename Flags, bool auto_destruct = true>
 class flag_ptr {
 private:
-    using flag_ptr_type = flag_ptr<PtrType, Flags, AutoDestruct>;
+    using flag_ptr_type = flag_ptr<PtrType, Flags, auto_destruct>;
 
     static constexpr std::size_t log2(std::size_t n) noexcept {
         return ((n < 2) ? 0 : 1 + log2(n / 2));
@@ -38,11 +38,11 @@ private:
 
     template <std::size_t index, std::size_t toindex, typename Tuple>
     static constexpr std::size_t eval_flag_offset() noexcept {
-        using Flag = typename std::tuple_element<index, Tuple>::type;
+        using flag_type = typename std::tuple_element<index, Tuple>::type;
         if constexpr (index == toindex) {
             return 0;
         } else {
-            return eval_flag_offset<index + 1, toindex, Tuple>() + Flag::size;
+            return eval_flag_offset<index + 1, toindex, Tuple>() + flag_type::size;
         }
     }
 
@@ -50,19 +50,19 @@ private:
     struct bitsize_to_int_type {
         static constexpr auto bytes = size_in_bits / 8 + (size_in_bits % 8 ? 1 : 0);
 
-        static_assert(size_in_bits <= sizeof(uintptr_t) * 8, "the size is too large");
+        static_assert(size_in_bits <= sizeof(std::uintptr_t) * 8, "the size is too large");
         static_assert(bytes <= 8, "you need to add type uint128_t ");
 
         using type = typename std::conditional<
             bytes == 1,
-            uint8_t,
+            std::uint8_t,
             std::conditional<
                 bytes == 2,
-                uint16_t,
+                std::uint16_t,
                 std::conditional<
                     bytes == 4,
-                    uint32_t,
-                    uint64_t>>>::type;
+                    std::uint32_t,
+                    std::uint64_t>>>::type;
     };
 
     template <std::size_t index>
@@ -79,13 +79,13 @@ private:
     }
 
     static constexpr std::size_t get_flags_size() noexcept {
-        constexpr auto Count = std::tuple_size<typename Flags::type>::value;
-        return get_flag_offset<Count - 1>() + get_flag_size<Count - 1>();
+        constexpr auto count = std::tuple_size<typename Flags::type>::value;
+        return get_flag_offset<count - 1>() + get_flag_size<count - 1>();
     }
 
     static_assert(
-            flag_ptr_type::get_flags_size() <= flag_ptr_type::max_bitfield_size,
-            "the size of the flags is too large");
+        flag_ptr_type::get_flags_size() <= flag_ptr_type::max_bitfield_size,
+        "the size of the flags is too large");
 
 public:
     explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
@@ -107,7 +107,7 @@ public:
 
     ~flag_ptr() noexcept { delete_ptr(); }
 
-   template <std::size_t index, typename Type>
+    template <std::size_t index, typename Type>
     void set_flag(Type value) noexcept {
         using flag_type = typename std::tuple_element<
             index,
@@ -155,7 +155,7 @@ public:
     }
 
     void delete_ptr() noexcept {
-        if constexpr(AutoDestruct)
+        if constexpr(auto_destruct)
             delete get_raw_ptr();
     }
     PtrType* get() noexcept {
@@ -210,10 +210,10 @@ private:
 template <
     typename PtrType,
     typename FlagsType,
-    bool AutoDestruct = true,
+    bool auto_destruct = true,
     typename...Args>
 static inline auto make_flag_ptr(Args&&...args) {
-    return flag_ptr<PtrType, FlagsType, AutoDestruct>(
+    return flag_ptr<PtrType, FlagsType, auto_destruct>(
            new PtrType(std::forward<Args>(args)...));
 }
 
