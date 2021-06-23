@@ -1,5 +1,5 @@
 # flag_ptr
-single header-only c++ library for unique_ptr with simple reading or writing flags on the youngest unused bits of pointer.
+single header-only c++ library for simple reading or writing flags on the youngest unused bits of pointer.
 
 ## examples
 ```C++
