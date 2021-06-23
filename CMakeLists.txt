@@ -1,13 +1,7 @@
 project(flag_ptr LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.18.4)
-set(CMAKE_VERBOSE_MAKEFILE ON)
 
-option(FLAG_PTR_BUILD_TESTS "Build flag_ptr tests + enable CTest" OFF)
-
-message(${FLAG_PTR_BUILD_TESTS})
-
-#include(CMakePackageConfigHelpers)
-#include(GNUInstallDirs)
+option(FLAG_PTR_BUILD_TESTS "Build flag_ptr tests + enable CTest" ON)
 
 add_library(flag_ptr INTERFACE)
 add_library(flag_ptr::flag_ptr ALIAS flag_ptr)
