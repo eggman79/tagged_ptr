@@ -20,8 +20,7 @@ compiler:
     - gcc
 script:
     - cd ${TRAVIS_BUILD_DIR}
-    - echo "script..."
-    - pwd
+    - cd build
     - make
     - make test
 after_success:
