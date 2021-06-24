@@ -36,13 +36,13 @@ private:
     static constexpr std::size_t max_bitfield_size = bits_alignment;
     static constexpr std::uintptr_t ptr_mask = ~((0x1 << bits_alignment) - 1);
 
-    template <std::size_t index, std::size_t toindex, typename Tuple>
+    template <std::size_t index, std::size_t to_index, typename Tuple>
     static constexpr std::size_t eval_flag_offset() noexcept {
         using flag_type = typename std::tuple_element<index, Tuple>::type;
-        if constexpr (index == toindex) {
+        if constexpr (index == to_index) {
             return 0;
         } else {
-            return eval_flag_offset<index + 1, toindex, Tuple>() + flag_type::size;
+            return eval_flag_offset<index + 1, to_index, Tuple>() + flag_type::size;
         }
     }
 
