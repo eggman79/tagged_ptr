@@ -1,3 +1,5 @@
+dist: bionic
+
 language: cpp
 
 install:
@@ -9,19 +11,23 @@ install:
     - mv cmake-3.20.0-linux-x86_64 cmake-install
     - PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
     - cd ${TRAVIS_BUILD_DIR}
+
 before_script:
     - echo "before script..."
     - cd ${TRAVIS_BUILD_DIR}
     - mkdir build
     - cd build
     - cmake ../
+
 compiler:
     - clang
     - gcc
+
 script:
     - cd ${TRAVIS_BUILD_DIR}
     - cd build
     - make
     - make test
+
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
