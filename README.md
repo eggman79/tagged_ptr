@@ -22,6 +22,16 @@ int main(int argc, char** argv) {
   }
 }
 ```
+## Testing
+```bash
+git clone https://github.com/eggman79/flag_ptr
+cd flag_ptr
+mkdir build
+cd build
+cmake .. -DFLAG_PTR_BUILD_TESTS
+make
+make test
+```
 
 ## Integration
 
