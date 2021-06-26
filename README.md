@@ -10,7 +10,7 @@ very simple single header-only c++ library for simple reading or writing flags o
 
 int main(int argc, char** argv) {
   using namespace eggman79;
-  enum Color {Red, Green, Blue};
+  enum class Color {Red, Green, Blue};
   
   auto str = make_flag_ptr<std::string, flags<flag<Color, 2>, flag<bool, 1>>>("string");
   
