@@ -38,6 +38,17 @@ using namespace eggman79;
 You can also use the `flag_ptr::flag_ptr` interface target in CMake.  This target populates the appropriate usage requirements for `INTERFACE_INCLUDE_DIRECTORIES` to point to the appropriate include directories and `INTERFACE_COMPILE_FEATURES` for the necessary C++20 flags.
 
 #### External
+Build and install library:
+
+```bash
+git clone https://github.com/eggman79/flag_ptr
+cd flag_ptr
+mkdir build
+cd build
+cmake ..
+make 
+make install # if you are not su then: sudo make install
+```
 
 To use this library from a CMake project, you can locate it directly with `find_package()` and use the namespaced imported target from the generated package configuration:
 
@@ -50,7 +61,6 @@ add_library(foo ...)
 target_link_libraries(foo PRIVATE flag_ptr::flag_ptr)
 ```
 
-The package configuration file, `flag_ptrConfig.cmake`, can be used either from an install tree or directly out of the build tree.
 
 #### Embedded
 
