@@ -64,11 +64,18 @@ target_link_libraries(foo PRIVATE flag_ptr::flag_ptr)
 
 #### Embedded
 
-To embed the library directly into an existing CMake project, place the entire source tree in a subdirectory and call `add_subdirectory()` in your `CMakeLists.txt` file:
+To embed the library directly into an existing CMake project:
+
+```bash
+mkdir thirdparty # or another arbitrary folder name
+git shubmodule add https://github.com/eggman79/flag_ptr thirdparty/flag_ptr
+
+```
+Call add_subdirectory() and target_link_libraries() in your CMakeLists.txt file:
 
 ```cmake
 
-add_subdirectory(flag_ptr)
+add_subdirectory(thirdparty/flag_ptr)
 ...
 add_library(foo ...)
 ...
