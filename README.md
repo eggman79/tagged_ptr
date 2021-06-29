@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
 ```bash
 git clone https://github.com/eggman79/flag_ptr
 cd flag_ptr
+git submdoule update --init
 mkdir build
 cd build
 cmake .. -DFLAG_PTR_BUILD_TESTS
