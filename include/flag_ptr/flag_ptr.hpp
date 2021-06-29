@@ -1,3 +1,6 @@
+// Copyright(c) 2021-present, eggman79
+// Distributed under the MIT License (http://opensource.org/licenses/MIT)
+
 #pragma once
 
 #include <cstdint>
