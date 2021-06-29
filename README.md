@@ -3,7 +3,7 @@
 # flag_ptr
 very simple single header-only c++ library for simple reading or writing flags on the youngest unused bits of pointer.
 
-## examples
+## Examples
 ```C++
 #include <string>
 #include <flag_ptr/flag_ptr.hpp>
