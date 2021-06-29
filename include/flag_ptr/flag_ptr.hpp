@@ -1,4 +1,4 @@
-// Copyright(c) 2021-present, eggman79
+// Copyright(c) 2021, eggman79
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
 #pragma once
