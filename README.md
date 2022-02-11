@@ -79,7 +79,7 @@ To embed the library directly into an existing CMake project:
 
 ```bash
 mkdir thirdparty # or another arbitrary folder name
-git shubmodule add https://github.com/eggman79/flag_ptr thirdparty/flag_ptr
+git submodule add https://github.com/eggman79/flag_ptr thirdparty/flag_ptr
 
 ```
 Call add_subdirectory() and target_link_libraries() in your CMakeLists.txt file:
