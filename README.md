@@ -14,10 +14,10 @@ int main(int argc, char** argv) {
   
   auto str = make_tagged_ptr<std::string, true, tags<tag<Color, 2>, tag<bool, 1>>>("string");
   
-  str.set_flag<0>(Color::Blue);
-  str.set_flag<1>(true);
+  str.set_tag<0>(Color::Blue);
+  str.set_tag<1>(true);
   
-  if (*str == "string" && str.get_flag<0>() == Color::Blue && str.get_flag<1>()) {
+  if (*str == "string" && str.get_tag<0>() == Color::Blue && str.get_tag<1>()) {
     std::cout << "ok" << std::endl;
   }
 }
