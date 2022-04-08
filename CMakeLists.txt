@@ -58,7 +58,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.2")
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tagged_ptrConfigVersion.cmake" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/tagged_ptr")
 endif()
 
-if (FLAG_PTR_BUILD_TESTS)
+if (TAGGED_PTR_BUILD_TESTS)
     add_subdirectory(3rdparty/googletest)
     enable_testing()
     add_subdirectory(tests)
