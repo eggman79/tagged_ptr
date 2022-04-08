@@ -17,7 +17,7 @@ before_script:
     - cd ${TRAVIS_BUILD_DIR}
     - mkdir build
     - cd build
-    - cmake -DFLAG_PTR_BUILD_TESTS=ON ../
+    - cmake -DTAGGED_PTR_BUILD_TESTS=ON ../
 
 compiler:
     - clang
