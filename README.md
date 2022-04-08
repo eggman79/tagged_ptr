@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
   using namespace eggman79;
   enum class Color {Red, Green, Blue};
   
-  auto str = make_tagged_ptr<std::string, flags<flag<Color, 2>, flag<bool, 1>>>("string");
+  auto str = make_tagged_ptr<std::string, true, tags<tag<Color, 2>, tag<bool, 1>>>("string");
   
   str.set_flag<0>(Color::Blue);
   str.set_flag<1>(true);
