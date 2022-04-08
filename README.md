@@ -6,13 +6,13 @@ very simple single header-only c++ library for simple reading or writing flags o
 ## Examples
 ```C++
 #include <string>
-#include <flag_ptr/flag_ptr.hpp>
+#include <tagged_ptr/tagged_ptr.hpp>
 
 int main(int argc, char** argv) {
   using namespace eggman79;
   enum class Color {Red, Green, Blue};
   
-  auto str = make_flag_ptr<std::string, flags<flag<Color, 2>, flag<bool, 1>>>("string");
+  auto str = make_tagged_ptr<std::string, flags<flag<Color, 2>, flag<bool, 1>>>("string");
   
   str.set_flag<0>(Color::Blue);
   str.set_flag<1>(true);
@@ -24,36 +24,36 @@ int main(int argc, char** argv) {
 ```
 ## Testing
 ```bash
-git clone https://github.com/eggman79/flag_ptr
-cd flag_ptr
+git clone https://github.com/eggman79/tagged_ptr
+cd tagged_ptr
 git submodule update --init
 mkdir build
 cd build
-cmake .. -DFLAG_PTR_BUILD_TESTS
+cmake .. -DTAGGED_PTR_BUILD_TESTS
 make
 make test
 ```
 
 ## Integration
 
-[`flag_ptr.hpp`](https://github.com/eggman79/flag_ptr/blob/main/include/flag_ptr/flag_ptr.hpp) is the single required file. You need to add
+[`tagged_ptr.hpp`](https://github.com/eggman79/tagged_ptr/blob/main/include/tagged_ptr/tagged_ptr.hpp) is the single required file. You need to add
 
 ```cpp
-#include <flag_ptr/flag_ptr.hpp>
+#include <tagged_ptr/tagged_ptr.hpp>
 
 using namespace eggman79;
 ```
 
 ### CMake
 
-You can also use the `flag_ptr::flag_ptr` interface target in CMake.  This target populates the appropriate usage requirements for `INTERFACE_INCLUDE_DIRECTORIES` to point to the appropriate include directories and `INTERFACE_COMPILE_FEATURES` for the necessary C++20 flags.
+You can also use the `tagged_ptr::tagged_ptr` interface target in CMake.  This target populates the appropriate usage requirements for `INTERFACE_INCLUDE_DIRECTORIES` to point to the appropriate include directories and `INTERFACE_COMPILE_FEATURES` for the necessary C++20 flags.
 
 #### External
 Build and install library:
 
 ```bash
-git clone https://github.com/eggman79/flag_ptr
-cd flag_ptr
+git clone https://github.com/eggman79/tagged_ptr
+cd tagged_ptr
 mkdir build
 cd build
 cmake ..
@@ -65,11 +65,11 @@ To use this library from a CMake project, you can locate it directly with `find_
 
 ```cmake
 # CMakeLists.txt
-find_package(flag_ptr REQUIRED)
+find_package(tagged_ptr REQUIRED)
 ...
 add_library(foo ...)
 ...
-target_link_libraries(foo PRIVATE flag_ptr::flag_ptr)
+target_link_libraries(foo PRIVATE tagged_ptr::tagged_ptr)
 ```
 
 
@@ -79,17 +79,17 @@ To embed the library directly into an existing CMake project:
 
 ```bash
 mkdir thirdparty # or another arbitrary folder name
-git submodule add https://github.com/eggman79/flag_ptr thirdparty/flag_ptr
+git submodule add https://github.com/eggman79/tagged_ptr thirdparty/tagged_ptr
 
 ```
 Call add_subdirectory() and target_link_libraries() in your CMakeLists.txt file:
 
 ```cmake
 
-add_subdirectory(thirdparty/flag_ptr)
+add_subdirectory(thirdparty/tagged_ptr)
 ...
 add_library(foo ...)
 ...
-target_link_libraries(foo PRIVATE flag_ptr::flag_ptr)
+target_link_libraries(foo PRIVATE tagged_ptr::tagged_ptr)
 ```
 
