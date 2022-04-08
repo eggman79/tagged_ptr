@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+if(NOT TARGET flag_ptr::flag_ptr)
+  include("${CMAKE_CURRENT_LIST_DIR}/flag_ptrTargets.cmake")
+  get_target_property(flag_ptr_INCLUDE_DIRS flag_ptr::flag_ptr INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+
