@@ -22,9 +22,9 @@ struct flags {
 };
 
 template <typename PtrType, typename Flags>
-class flag_ptr {
+class tagged_ptr {
 private:
-    using flag_ptr_type = flag_ptr<PtrType, Flags>;
+    using tagged_ptr_type = tagged_ptr<PtrType, Flags>;
 
     static constexpr std::size_t log2(std::size_t n) noexcept {
         return ((n < 2) ? 0 : 1 + log2(n / 2));
@@ -87,28 +87,28 @@ private:
     }
 
     static_assert(
-        flag_ptr_type::get_flags_size() <= flag_ptr_type::max_bitfield_size,
+        tagged_ptr_type::get_flags_size() <= tagged_ptr_type::max_bitfield_size,
         "the size of the flags is too large");
 
 public:
-    explicit flag_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
-    explicit flag_ptr(const flag_ptr_type& f) = delete;
-    flag_ptr() noexcept : m_ptr(nullptr) {}
+    explicit tagged_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
+    explicit tagged_ptr(const tagged_ptr_type& f) = delete;
+    tagged_ptr() noexcept : m_ptr(nullptr) {}
 
-    explicit flag_ptr(flag_ptr_type&& f) noexcept {
+    explicit tagged_ptr(tagged_ptr_type&& f) noexcept {
         m_ptr = f.m_ptr;
         f.m_ptr = nullptr;
     }
 
-    auto& operator=(const flag_ptr_type& f) = delete;
+    auto& operator=(const tagged_ptr_type& f) = delete;
 
-    auto& operator=(flag_ptr_type&& f) noexcept {
+    auto& operator=(tagged_ptr_type&& f) noexcept {
         m_ptr = f.m_ptr;
         f.m_ptr = nullptr;
         return *this;
     }
 
-    ~flag_ptr() noexcept { delete_ptr(); }
+    ~tagged_ptr() noexcept { delete_ptr(); }
 
     template <std::size_t index, typename Type>
     void set_flag(Type value) noexcept {
@@ -117,7 +117,7 @@ public:
             typename Flags::type>::type;
 
         using int_type = typename bitsize_to_int_type<
-            flag_ptr_type::get_flags_size()>::type;
+            tagged_ptr_type::get_flags_size()>::type;
 
         const auto val = *reinterpret_cast<int_type*>(&value);
         constexpr auto size = flag_type::size;
@@ -213,8 +213,8 @@ template <
     typename PtrType,
     typename FlagsType,
     typename...Args>
-static inline auto make_flag_ptr(Args&&...args) {
-    return flag_ptr<PtrType, FlagsType>(
+static inline auto make_tagged_ptr(Args&&...args) {
+    return tagged_ptr<PtrType, FlagsType>(
            new PtrType(std::forward<Args>(args)...));
 }
 
