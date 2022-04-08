@@ -21,10 +21,10 @@ struct tags {
     using type = std::tuple<Flags...>;
 };
 
-template <typename PtrType, typename Flags>
+template <typename PtrType, bool UniquePtr, typename Flags>
 class tagged_ptr {
 private:
-    using tagged_ptr_type = tagged_ptr<PtrType, Flags>;
+    using tagged_ptr_type = tagged_ptr<PtrType, UniquePtr, Flags>;
 
     static constexpr std::size_t log2(std::size_t n) noexcept {
         return ((n < 2) ? 0 : 1 + log2(n / 2));
@@ -211,10 +211,11 @@ private:
 
 template <
     typename PtrType,
+    bool UniquePtr,
     typename FlagsType,
     typename...Args>
 static inline auto make_tagged_ptr(Args&&...args) {
-    return tagged_ptr<PtrType, FlagsType>(
+    return tagged_ptr<PtrType, UniquePtr, FlagsType>(
            new PtrType(std::forward<Args>(args)...));
 }
 
