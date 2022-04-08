@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/eggman79/tagged_ptr.svg?branch=main)](https://travis-ci.com/eggman79/tagged_ptr)
+[![Build Status](https://travis-ci.com/eggman79/tagged_ptr.svg?branch=main)](https://app.travis-ci.com/github/eggman79/tagged_ptr)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d1942e0dcae448959c9a7bc0da909d26)](https://www.codacy.com/gh/eggman79/tagged_ptr/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eggman79/tagged_ptr&amp;utm_campaign=Badge_Grade)
 # tagged_ptr
 very simple single header-only c++ library for simple reading or writing flags on the youngest unused bits of pointer.
