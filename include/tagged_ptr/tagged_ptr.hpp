@@ -10,14 +10,14 @@
 
 namespace eggman79 {
 
-template <typename Type, std::size_t flag_size>
-struct flag {
+template <typename Type, std::size_t tag_size>
+struct tag {
     using type = Type;
-    static constexpr auto size = flag_size;
+    static constexpr auto size = tag_size;
 };
 
 template <typename...Flags>
-struct flags {
+struct tags {
     using type = std::tuple<Flags...>;
 };
 
@@ -40,12 +40,12 @@ private:
     static constexpr std::uintptr_t ptr_mask = ~((0x1 << bits_alignment) - 1);
 
     template <std::size_t index, std::size_t to_index, typename Tuple>
-    static constexpr std::size_t eval_flag_offset() noexcept {
-        using flag_type = typename std::tuple_element<index, Tuple>::type;
+    static constexpr std::size_t eval_tag_offset() noexcept {
+        using tag_type = typename std::tuple_element<index, Tuple>::type;
         if constexpr (index == to_index) {
             return 0;
         } else {
-            return eval_flag_offset<index + 1, to_index, Tuple>() + flag_type::size;
+            return eval_tag_offset<index + 1, to_index, Tuple>() + tag_type::size;
         }
     }
 
@@ -69,26 +69,26 @@ private:
     };
 
     template <std::size_t index>
-    static constexpr std::size_t get_flag_offset() noexcept {
-        return eval_flag_offset<0, index, typename Flags::type>();
+    static constexpr std::size_t get_tag_offset() noexcept {
+        return eval_tag_offset<0, index, typename Flags::type>();
     }
 
     template <std::size_t index>
-    static constexpr std::size_t get_flag_size() noexcept {
-        using flag_type = typename std::tuple_element<
+    static constexpr std::size_t get_tag_size() noexcept {
+        using tag_type = typename std::tuple_element<
             index,
             typename Flags::type>::type;
-        return flag_type::size;
+        return tag_type::size;
     }
 
-    static constexpr std::size_t get_flags_size() noexcept {
+    static constexpr std::size_t get_tags_size() noexcept {
         constexpr auto count = std::tuple_size<typename Flags::type>::value;
-        return get_flag_offset<count - 1>() + get_flag_size<count - 1>();
+        return get_tag_offset<count - 1>() + get_tag_size<count - 1>();
     }
 
     static_assert(
-        tagged_ptr_type::get_flags_size() <= tagged_ptr_type::max_bitfield_size,
-        "the size of the flags is too large");
+        tagged_ptr_type::get_tags_size() <= tagged_ptr_type::max_bitfield_size,
+        "the size of the tags is too large");
 
 public:
     explicit tagged_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
@@ -111,34 +111,34 @@ public:
     ~tagged_ptr() noexcept { delete_ptr(); }
 
     template <std::size_t index, typename Type>
-    void set_flag(Type value) noexcept {
-        using flag_type = typename std::tuple_element<
+    void set_tag(Type value) noexcept {
+        using tag_type = typename std::tuple_element<
             index,
             typename Flags::type>::type;
 
         using int_type = typename bitsize_to_int_type<
-            tagged_ptr_type::get_flags_size()>::type;
+            tagged_ptr_type::get_tags_size()>::type;
 
         const auto val = *reinterpret_cast<int_type*>(&value);
-        constexpr auto size = flag_type::size;
-        constexpr auto offset = get_flag_offset<index>();
+        constexpr auto size = tag_type::size;
+        constexpr auto offset = get_tag_offset<index>();
         constexpr auto value_mask = get_value_with_offset_mask(size, offset);
         constexpr auto inverted_value_mask = ~value_mask;
-        const auto clean_flags = ((val << offset) & value_mask);
+        const auto clean_tags = ((val << offset) & value_mask);
         const auto clean_ptr = (((std::uintptr_t)m_ptr) & inverted_value_mask);
-        m_ptr = reinterpret_cast<PtrType*>(clean_ptr | clean_flags);
+        m_ptr = reinterpret_cast<PtrType*>(clean_ptr | clean_tags);
     }
 
     template <std::size_t index>
-    auto get_flag() const noexcept {
-        using flag_type = typename std::tuple_element<
+    auto get_tag() const noexcept {
+        using tag_type = typename std::tuple_element<
             index, typename Flags::type>::type;
 
-        constexpr auto size = flag_type::size;
-        constexpr auto offset = get_flag_offset<index>();
+        constexpr auto size = tag_type::size;
+        constexpr auto offset = get_tag_offset<index>();
         constexpr auto value_mask = get_value_mask(size);
         const auto value = (((std::uintptr_t)m_ptr) >> offset) & value_mask;
-        return *(typename flag_type::type*)(&value);
+        return *(typename tag_type::type*)(&value);
     }
 
     const PtrType* operator->() const noexcept {
@@ -177,10 +177,10 @@ public:
     }
 
     void reset_only_ptr(PtrType* ptr) noexcept {
-        constexpr auto flags_size = get_flags_size();
-        const auto flags = (std::uintptr_t)m_ptr & get_value_mask(flags_size);
+        constexpr auto tags_size = get_tags_size();
+        const auto tags = (std::uintptr_t)m_ptr & get_value_mask(tags_size);
         delete_ptr();
-        m_ptr = reinterpret_cast<PtrType*>((std::uintptr_t)ptr | flags);
+        m_ptr = reinterpret_cast<PtrType*>((std::uintptr_t)ptr | tags);
     }
 
     void reset() noexcept {
