@@ -16,15 +16,11 @@ struct tag {
     static constexpr auto size = tag_size;
 };
 
-template <typename...Flags>
-struct tags {
-    using type = std::tuple<Flags...>;
-};
-
-template <typename PtrType, bool UniquePtr, typename Flags>
+template <typename PtrType, bool UniquePtr, typename...Tags>
 class tagged_ptr {
 private:
-    using tagged_ptr_type = tagged_ptr<PtrType, UniquePtr, Flags>;
+    using tagged_ptr_type = tagged_ptr<PtrType, UniquePtr, Tags...>;
+    using tuple_flags = std::tuple<Tags...>;
 
     static constexpr std::size_t log2(std::size_t n) noexcept {
         return ((n < 2) ? 0 : 1 + log2(n / 2));
@@ -70,25 +66,25 @@ private:
 
     template <std::size_t index>
     static constexpr std::size_t get_tag_offset() noexcept {
-        return eval_tag_offset<0, index, typename Flags::type>();
+        return eval_tag_offset<0, index, tuple_flags>();
     }
 
     template <std::size_t index>
     static constexpr std::size_t get_tag_size() noexcept {
         using tag_type = typename std::tuple_element<
             index,
-            typename Flags::type>::type;
+            tuple_flags>::type;
         return tag_type::size;
     }
 
     static constexpr std::size_t get_tags_size() noexcept {
-        constexpr auto count = std::tuple_size<typename Flags::type>::value;
+        constexpr auto count = std::tuple_size<tuple_flags>::value;
         return get_tag_offset<count - 1>() + get_tag_size<count - 1>();
     }
 
-    static_assert(
-        tagged_ptr_type::get_tags_size() <= tagged_ptr_type::max_bitfield_size,
-        "the size of the tags is too large");
+    //static_assert(
+      //  tagged_ptr_type::get_tags_size() * 2 <= tagged_ptr_type::max_bitfield_size,
+        //"the size of the tags is too large");
 
 public:
     explicit tagged_ptr(PtrType* ptr) noexcept : m_ptr(ptr) {}
@@ -114,7 +110,7 @@ public:
     void set_tag(Type value) noexcept {
         using tag_type = typename std::tuple_element<
             index,
-            typename Flags::type>::type;
+            tuple_flags>::type;
 
         using int_type = typename bitsize_to_int_type<
             tagged_ptr_type::get_tags_size()>::type;
@@ -132,7 +128,7 @@ public:
     template <std::size_t index>
     auto get_tag() const noexcept {
         using tag_type = typename std::tuple_element<
-            index, typename Flags::type>::type;
+            index, tuple_flags>::type;
 
         constexpr auto size = tag_type::size;
         constexpr auto offset = get_tag_offset<index>();
@@ -212,11 +208,11 @@ private:
 template <
     typename PtrType,
     bool UniquePtr,
-    typename FlagsType,
+    typename...FlagsType,
     typename...Args>
 static inline auto make_tagged_ptr(Args&&...args) {
-    return tagged_ptr<PtrType, UniquePtr, FlagsType>(
-           new PtrType(std::forward<Args>(args)...));
+    return tagged_ptr<PtrType, UniquePtr, FlagsType...>(
+        new PtrType(std::forward<Args>(args)...));
 }
 
 }  // namespace eggman79
